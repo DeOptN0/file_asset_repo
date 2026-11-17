@@ -7,13 +7,14 @@
   <style>
     :root {
       --bg: #0b1722;
-      --panel: rgba(8, 14, 20, 0.76);
+      --panel: rgba(10, 16, 24, 0.72);
       --gold: #ffd23f;
-      --gold-soft: #ffe08a;
-      --good: #68e38d;
-      --danger: #ff5c5c;
-      --blue: #8ec9ff;
+      --gold-soft: #ffe58a;
+      --blue: #9ed0ff;
       --text: #eef3ff;
+      --warn: #ffb15e;
+      --good: #72ef9d;
+      --danger: #ff6a6a;
     }
 
     * { box-sizing: border-box; }
@@ -33,53 +34,54 @@
       width: 100%;
       height: 100%;
       cursor: crosshair;
+      background: #9cc3d8;
     }
 
     .screen {
       position: absolute;
       inset: 0;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
       text-align: center;
-      z-index: 12;
-      background: radial-gradient(ellipse at center, rgba(10,25,38,0.74), rgba(5,8,12,0.96));
-      padding: 20px;
+      z-index: 20;
+      background: radial-gradient(ellipse at center, rgba(15,28,42,0.75), rgba(3,6,10,0.96));
+      padding: 18px;
     }
 
     .screen h1 {
       margin: 0;
-      font-size: clamp(56px, 12vw, 160px);
-      line-height: 0.8;
-      letter-spacing: 4px;
       color: var(--gold);
-      text-shadow: 4px 4px 0 #000, -2px -2px 0 #000;
+      font-size: clamp(56px, 10vw, 150px);
+      letter-spacing: 4px;
+      line-height: .85;
+      text-shadow: 5px 5px 0 #000, -2px -2px 0 #000;
     }
 
     .screen h2 {
-      margin: 10px 0 18px;
+      margin: 12px 0 18px;
       color: var(--blue);
-      letter-spacing: 6px;
-      font-size: clamp(18px, 2.1vw, 36px);
+      letter-spacing: 5px;
+      font-size: clamp(20px, 3vw, 36px);
       font-weight: 500;
     }
 
     .panel {
-      background: rgba(0,0,0,0.36);
+      background: rgba(0,0,0,0.34);
       border: 2px solid rgba(255,255,255,0.12);
       border-radius: 8px;
-      padding: 16px 22px;
+      padding: 14px 18px;
+      font-size: clamp(18px, 2vw, 26px);
+      line-height: 1.6;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
       max-width: 760px;
-      line-height: 1.7;
-      font-size: 24px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
     }
 
     .small {
       margin-top: 12px;
+      color: #b6c3de;
       font-size: 16px;
-      color: #b4c0d7;
     }
 
     .btn {
@@ -88,19 +90,21 @@
       background: var(--gold);
       color: #111;
       font-weight: 800;
-      font-size: 22px;
-      padding: 8px 20px;
+      font-size: 20px;
+      padding: 8px 18px;
       margin: 6px;
       cursor: pointer;
       box-shadow: 4px 4px 0 #000;
       transition: transform 0.08s ease, background 0.08s ease;
     }
 
-    .btn:hover { background: #fff; }
-    .btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #000; }
+    .btn:hover { background: white; }
+    .btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 #000;
+    }
 
     #pause .btn { font-size: 18px; }
-
     .hidden { display: none !important; }
 
     #hud {
@@ -108,7 +112,6 @@
       inset: 0;
       z-index: 10;
       pointer-events: none;
-      font-family: Arial, Helvetica, sans-serif;
     }
 
     #brand {
@@ -116,7 +119,7 @@
       left: 18px;
       top: 18px;
       color: var(--gold);
-      font-size: 28px;
+      font-size: 30px;
       font-weight: 900;
       letter-spacing: 2px;
       text-shadow: 2px 2px 0 #000;
@@ -124,48 +127,47 @@
 
     #stats {
       position: absolute;
-      right: 18px;
       top: 18px;
+      right: 18px;
       text-align: right;
+      background: rgba(0,0,0,0.22);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      padding: 8px 10px;
       font-size: 18px;
       line-height: 1.35;
-      padding: 8px 10px;
-      background: rgba(0,0,0,0.28);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 6px;
     }
 
     .bar {
-      margin: 4px 0 8px auto;
-      width: 170px;
+      width: 180px;
       height: 12px;
+      background: rgba(0,0,0,0.36);
       border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(0,0,0,0.35);
-      position: relative;
-      overflow: hidden;
       border-radius: 4px;
+      overflow: hidden;
+      margin: 4px 0 8px auto;
     }
 
     .bar > div {
       height: 100%;
       width: 100%;
-      background: linear-gradient(90deg, #e84d4d, #ff7d64);
+      background: linear-gradient(90deg, #e35757, #ff8e73);
       transition: width 0.12s ease;
     }
 
-    .bar .armor { background: linear-gradient(90deg, #4bb5ff, #77d7ff); }
+    .bar .armor { background: linear-gradient(90deg, #49a5ff, #8ad8ff); }
 
     #help {
       position: absolute;
       left: 18px;
       bottom: 18px;
-      background: rgba(8, 12, 16, 0.6);
-      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(5, 10, 15, 0.62);
+      border: 1px solid rgba(255,255,255,0.10);
       border-radius: 6px;
       padding: 10px 12px;
       font-size: 14px;
-      line-height: 1.65;
-      max-width: 460px;
+      line-height: 1.6;
+      max-width: 440px;
     }
 
     #hint {
@@ -183,16 +185,16 @@
 
     #toast {
       position: absolute;
-      top: 96px;
       left: 50%;
+      top: 100px;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.56);
-      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.52);
+      border: 1px solid rgba(255,255,255,0.12);
       border-radius: 6px;
-      padding: 8px 16px;
+      padding: 8px 18px;
       font-size: 18px;
       opacity: 0;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.18s ease;
     }
 
     #crosshair {
@@ -202,9 +204,8 @@
       width: 12px;
       height: 12px;
       transform: translate(-50%, -50%);
-      border: 1px solid rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.82);
       border-radius: 50%;
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.4);
     }
 
     #crosshair::before, #crosshair::after {
@@ -215,16 +216,16 @@
 
     #crosshair::before {
       left: 50%;
-      top: -6px;
+      top: -7px;
       width: 1px;
-      height: 22px;
+      height: 24px;
       transform: translateX(-50%);
     }
 
     #crosshair::after {
-      left: -6px;
+      left: -7px;
       top: 50%;
-      width: 22px;
+      width: 24px;
       height: 1px;
       transform: translateY(-50%);
     }
@@ -236,32 +237,31 @@
     <h2>3D OPEN-WORLD EDITION</h2>
     <div class="panel">
       <b>WASD</b> move / drive &nbsp; <b>MOUSE</b> look around<br>
-      <b>F</b> enter / exit car &nbsp; <b>SHIFT</b> sprint / nitro<br>
-      <b>SPACE</b> handbrake / brake &nbsp; <b>E</b> collect nearby cash<br>
-      <b>P</b> / <b>ESC</b> pause &nbsp; <b>M</b> mute ambient<br>
-      <b>CLICK</b> lock mouse look
+      <b>F</b> enter / exit vehicle &nbsp; <b>SHIFT</b> sprint / nitro<br>
+      <b>SPACE</b> brake / handbrake &nbsp; <b>E</b> collect nearby cash<br>
+      <b>CLICK</b> lock pointer &nbsp; <b>P</b> pause
     </div>
-    <div style="margin-top: 16px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;">
+    <div style="margin-top:16px; display:flex; flex-wrap:wrap; justify-content:center; gap:6px;">
       <button id="titleImport" class="btn">IMPORT SAVE (.JSON)</button>
       <button id="start" class="btn">START GAME</button>
     </div>
-    <div id="titleStatus" class="small">Loading the 3D conversion with the same save/import flow.</div>
+    <div id="titleStatus" class="small">3D version with the same save/import format as the original.</div>
   </div>
 
   <div id="pause" class="screen hidden">
-    <h1 style="font-size: clamp(52px, 9vw, 120px);">PAUSED</h1>
+    <h1 style="font-size:clamp(52px,8vw,110px);">PAUSED</h1>
     <h2>CRIME CITY 3D</h2>
-    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:4px;">
+    <div style="display:flex; flex-wrap:wrap; justify-content:center;">
       <button id="resume" class="btn">RESUME</button>
       <button id="export" class="btn">EXPORT SAVE (.JSON)</button>
       <button id="import" class="btn">IMPORT SAVE (.JSON)</button>
       <button id="newGame" class="btn">NEW GAME</button>
     </div>
-    <div id="saveStatus" class="small" style="min-height: 24px; color: #73ef9d; font-size: 18px;"></div>
-    <div class="small">Save files are kept in the same general format so they can be imported between versions.</div>
+    <div id="saveStatus" class="small" style="min-height:24px; color:#75ef9b; font-size:18px"></div>
+    <div class="small">The save file keeps a compatible JSON structure for import between versions.</div>
   </div>
 
-  <input id="saveFile" type="file" accept=".json,application/json" hidden>
+  <input id="saveFile" type="file" accept=".json,application/json" hidden />
 
   <div id="hud" class="hidden">
     <div id="brand">CRIME CITY 3D</div>
@@ -269,16 +269,16 @@
       <div id="cash">$0</div>
       <div id="clock">18:00</div>
       <div id="area">DOWNTOWN</div>
-      <div style="margin-top: 6px;">HEALTH</div>
-      <div class="bar"><div id="health" style="width: 100%"></div></div>
+      <div style="margin-top:8px;">HEALTH</div>
+      <div class="bar"><div id="health" style="width:100%"></div></div>
       <div>ARMOR</div>
-      <div class="bar"><div id="armor" class="armor" style="width: 0%"></div></div>
+      <div class="bar"><div id="armor" class="armor" style="width:0%"></div></div>
       <div id="wanted">☆☆☆☆☆</div>
-      <div id="vehicleText" style="margin-top: 6px; min-height: 18px;"> </div>
+      <div id="vehicleText" style="min-height:18px; margin-top:6px;"></div>
     </div>
 
     <div id="help">
-      <b>WASD</b> move / steer &nbsp; <b>F</b> enter car &nbsp; <b>E</b> cash pickup<br>
+      <b>WASD</b> move / steer &nbsp; <b>F</b> enter vehicle &nbsp; <b>E</b> nearby cash<br>
       <b>SHIFT</b> sprint / nitro &nbsp; <b>SPACE</b> brake &nbsp; <b>P</b> pause
     </div>
 
@@ -290,7 +290,7 @@
   <script type="module">
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
-    "use strict";
+    'use strict';
 
     const SAVE_KEY = 'crimecity_save_v2';
     const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
@@ -299,79 +299,72 @@
     const dist2D = (x1, z1, x2, z2) => Math.hypot(x2 - x1, z2 - z1);
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x9ec3d9);
-    scene.fog = new THREE.Fog(0x9ec3d9, 250, 1400);
+    scene.background = new THREE.Color(0x9ec1d6);
+    scene.fog = new THREE.Fog(0x9ec1d6, 200, 1300);
 
-    const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 3000);
+    const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 2600);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
+    renderer.toneMappingExposure = 1.05;
     document.body.appendChild(renderer.domElement);
 
-    const hemi = new THREE.HemisphereLight(0xcfe9ff, 0x2a261e, 1.7);
-    scene.add(hemi);
-
-    const sun = new THREE.DirectionalLight(0xffefc7, 2.2);
-    sun.position.set(-260, 420, -180);
+    const sun = new THREE.DirectionalLight(0xfff0c6, 2.1);
+    sun.position.set(-280, 450, -180);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
-    sun.shadow.camera.left = -500;
-    sun.shadow.camera.right = 500;
-    sun.shadow.camera.top = 500;
-    sun.shadow.camera.bottom = -500;
+    sun.shadow.camera.left = -550;
+    sun.shadow.camera.right = 550;
+    sun.shadow.camera.top = 550;
+    sun.shadow.camera.bottom = -550;
     scene.add(sun);
+
+    const hemi = new THREE.HemisphereLight(0xdfeeff, 0x2d2019, 1.5);
+    scene.add(hemi);
 
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(2200, 2200),
-      new THREE.MeshStandardMaterial({ color: 0x5e7557, roughness: 0.9, metalness: 0.04 })
+      new THREE.MeshStandardMaterial({ color: 0x59754b, roughness: 0.9, metalness: 0.04 })
     );
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    const cityGroup = new THREE.Group();
-    scene.add(cityGroup);
+    const city = new THREE.Group();
+    scene.add(city);
 
     const colliders = [];
     const parkedCars = [];
     const pickups = [];
-    const roadSegments = [];
+    const missionMarkers = [];
+    const roadBlocks = [];
 
-    const material = (color, rough = 0.72, metal = 0.12) => new THREE.MeshStandardMaterial({
-      color,
-      roughness: rough,
-      metalness: metal,
-    });
-
-    function addRoad(x, z, w, d) {
-      const mesh = new THREE.Mesh(
-        new THREE.BoxGeometry(w, 0.12, d),
-        material(0x353a3d, 0.9, 0.1)
-      );
-      mesh.position.set(x, 0.08, z);
-      mesh.receiveShadow = true;
-      scene.add(mesh);
-      roadSegments.push(mesh);
+    function mat(color, rough = 0.7, metal = 0.14) {
+      return new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal });
     }
 
-    function addDashedLine(x, z, axis) {
+    function addRoad(x, z, w, d) {
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, 0.12, d), mat(0x363a3d, 0.9, 0.1));
+      mesh.position.set(x, 0.06, z);
+      mesh.receiveShadow = true;
+      scene.add(mesh);
+      roadBlocks.push(mesh);
+    }
+
+    function addLines(x, z, axis) {
       const group = new THREE.Group();
-      const mat = material(0xf3d752, 0.5, 0.08);
-      const count = 22;
+      const count = 18;
+      const stripMat = mat(0xf2d14a, 0.6, 0.08);
       for (let i = 0; i < count; i++) {
         const strip = new THREE.Mesh(
-          axis === 'x' ? new THREE.BoxGeometry(16, 0.06, 2.8) : new THREE.BoxGeometry(2.8, 0.06, 16),
-          mat
+          axis === 'x' ? new THREE.BoxGeometry(14, 0.04, 3) : new THREE.BoxGeometry(3, 0.04, 14),
+          stripMat
         );
-        if (axis === 'x') {
-          strip.position.set(i * 32 - 320, 0.16, 0);
-        } else {
-          strip.position.set(0, 0.16, i * 32 - 320);
-        }
+        if (axis === 'x') strip.position.set(i * 24 - 204, 0.12, 0);
+        else strip.position.set(0, 0.12, i * 24 - 204);
         group.add(strip);
       }
       group.position.set(x, 0, z);
@@ -380,21 +373,25 @@
 
     const BLOCK = 230;
     const ORIGIN = -720;
-    const ROADW = 46;
+    const ROADW = 48;
 
-    function createDistrictBlock(ix, iz, districtName) {
+    function districtFor(ix, iz) {
+      if (iz === 3) return 'PORT ASH';
+      if (ix >= 3 && ix <= 5 && iz < 3) return 'DOWNTOWN';
+      if (ix > 3 && iz > 3) return 'NEON STRIP';
+      return 'NORTHWOOD';
+    }
+
+    function createDistrictBlock(ix, iz) {
       const bx = ORIGIN + ix * BLOCK;
       const bz = ORIGIN + iz * BLOCK;
-      const pad = 8;
-      const span = BLOCK - ROADW - 12;
+      const span = BLOCK - ROADW - 16;
+      const district = districtFor(ix, iz);
 
-      const sidewalk = new THREE.Mesh(
-        new THREE.BoxGeometry(span, 0.2, span),
-        material(0x878d90, 0.95, 0.08)
-      );
-      sidewalk.position.set(bx + BLOCK / 2, 0.12, bz + BLOCK / 2);
+      const sidewalk = new THREE.Mesh(new THREE.BoxGeometry(span, 0.18, span), mat(0x8a8d92));
+      sidewalk.position.set(bx + BLOCK / 2, 0.1, bz + BLOCK / 2);
       sidewalk.receiveShadow = true;
-      cityGroup.add(sidewalk);
+      city.add(sidewalk);
 
       const isPark = (ix === 1 && iz === 1) || (ix === 5 && iz === 5);
       const isLot = ((ix * 11 + iz * 7) % 9 === 0);
@@ -402,73 +399,57 @@
       if (isPark) {
         for (let i = 0; i < 18; i++) {
           const tree = new THREE.Group();
-          const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 2.1, 12, 8), material(0x5d3d2b));
-          trunk.position.y = 6;
+          const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 2.0, 11, 8), mat(0x5d3b2e));
+          trunk.position.y = 5.5;
           trunk.castShadow = true;
-          const crown = new THREE.Mesh(new THREE.SphereGeometry(rand(4.5, 7.2), 10, 10), material(pick([0x4a8c4c, 0x3c7c44, 0x5c9f5d])));
-          crown.position.y = 13;
+          const crown = new THREE.Mesh(new THREE.SphereGeometry(rand(4.5, 6.8), 10, 10), mat(pick([0x3d7d45, 0x4e8d52, 0x5ea25d])));
+          crown.position.y = 12;
           crown.castShadow = true;
           tree.add(trunk, crown);
-          const tx = bx + 30 + rand(0, span - 60);
-          const tz = bz + 30 + rand(0, span - 60);
-          tree.position.set(tx, 0.2, tz);
-          tree.traverse(obj => {
-            if (obj.isMesh) {
-              obj.castShadow = true;
-              obj.receiveShadow = true;
-            }
-          });
-          cityGroup.add(tree);
+          tree.position.set(bx + 28 + rand(0, span - 56), 0.1, bz + 28 + rand(0, span - 56));
+          city.add(tree);
         }
         return;
       }
 
       if (isLot) {
-        const lotMat = material(0x4e4d54, 0.88, 0.08);
-        const lotPlane = new THREE.Mesh(new THREE.BoxGeometry(span * 0.78, 0.06, span * 0.78), lotMat);
-        lotPlane.position.set(bx + BLOCK / 2, 0.18, bz + BLOCK / 2);
-        lotPlane.receiveShadow = true;
-        cityGroup.add(lotPlane);
+        const pad = new THREE.Mesh(new THREE.BoxGeometry(span * 0.75, 0.08, span * 0.75), mat(0x4a4c51));
+        pad.position.set(bx + BLOCK / 2, 0.18, bz + BLOCK / 2);
+        pad.receiveShadow = true;
+        city.add(pad);
         return;
       }
 
       const buildingCount = 1 + Math.floor(Math.random() * 3);
       for (let b = 0; b < buildingCount; b++) {
-        const w = rand(span * 0.3, span * 0.72);
-        const d = rand(span * 0.3, span * 0.72);
-        const h = districtName === 'DOWNTOWN' ? rand(55, 180) : rand(22, 90);
-        const x = bx + 25 + rand(0, span - w - 30);
-        const z = bz + 25 + rand(0, span - d - 30);
-        const color = districtName === 'DOWNTOWN'
-          ? pick([0x5d6778, 0x767f89, 0x6e7d85, 0x8593a1])
-          : pick([0x977d6e, 0x8d7d71, 0x7c6d63, 0x6d7d7a]);
+        const w = rand(span * 0.28, span * 0.72);
+        const d = rand(span * 0.28, span * 0.72);
+        const h = district === 'DOWNTOWN' ? rand(70, 200) : rand(25, 110);
+        const x = bx + 26 + rand(0, span - w - 30);
+        const z = bz + 26 + rand(0, span - d - 30);
+        const color = district === 'DOWNTOWN'
+          ? pick([0x5f6c7e, 0x7a848d, 0x536878, 0x8b98a2])
+          : pick([0x8d7a6b, 0x756d6a, 0x6e7d78, 0x9f7d6e]);
 
-        const building = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material(color, 0.8, 0.14));
+        const building = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color, 0.8, 0.12));
         building.position.set(x + w / 2, h / 2, z + d / 2);
         building.castShadow = true;
         building.receiveShadow = true;
-        cityGroup.add(building);
+        city.add(building);
 
-        colliders.push({
-          minX: x,
-          maxX: x + w,
-          minZ: z,
-          maxZ: z + d,
-        });
+        colliders.push({ minX: x, maxX: x + w, minZ: z, maxZ: z + d });
 
-        const roof = new THREE.Mesh(new THREE.BoxGeometry(w + 6, 2, d + 6), material(0x40474e));
-        roof.position.set(x + w / 2, h + 1, z + d / 2);
-        roof.castShadow = true;
-        cityGroup.add(roof);
+        const roof = new THREE.Mesh(new THREE.BoxGeometry(w + 4, 2.4, d + 4), mat(0x40454b));
+        roof.position.set(x + w / 2, h + 1.2, z + d / 2);
+        city.add(roof);
 
-        const rows = Math.ceil(h / 16);
+        const rows = Math.ceil(h / 18);
         const cols = Math.max(2, Math.ceil(w / 18));
         for (let r = 1; r < rows; r += 2) {
           for (let c = 0; c < cols; c += 2) {
-            const panel = new THREE.Mesh(new THREE.BoxGeometry(3.5, 3.5, 0.4), material(0x9ecce6, 0.3, 0.15));
-            panel.position.set(x + c * (w / cols) + 8, r * 12, z + d + 0.3);
-            panel.castShadow = true;
-            cityGroup.add(panel);
+            const panel = new THREE.Mesh(new THREE.BoxGeometry(3.2, 3.4, 0.3), mat(0x9ccae6, 0.38, 0.1));
+            panel.position.set(x + (c + 0.7) * (w / cols), r * 14, z + d + 0.4);
+            city.add(panel);
           }
         }
       }
@@ -476,40 +457,36 @@
 
     for (let iz = 0; iz < 7; iz++) {
       for (let ix = 0; ix < 7; ix++) {
-        const districtName = iz === 3 ? 'PORT ASH' : (ix >= 3 && ix <= 5 && iz < 3 ? 'DOWNTOWN' : (ix > 3 && iz > 3 ? 'NEON STRIP' : 'NORTHWOOD'));
-        createDistrictBlock(ix, iz, districtName);
+        createDistrictBlock(ix, iz);
       }
     }
 
-    const roadGrid = [];
     for (let i = 0; i < 8; i++) {
       const pos = ORIGIN + i * BLOCK + BLOCK / 2;
-      roadGrid.push({ x: pos, z: 0, w: ROADW, d: 1800 });
-      roadGrid.push({ x: 0, z: pos, w: 1800, d: ROADW });
+      addRoad(pos, 0, ROADW, 1800);
+      addRoad(0, pos, 1800, ROADW);
     }
-
-    roadGrid.forEach(r => addRoad(r.x, r.z, r.w, r.d));
 
     for (let i = 0; i < 18; i++) {
-      addDashedLine(ORIGIN + i * BLOCK + BLOCK / 2, 0, 'x');
-      addDashedLine(0, ORIGIN + i * BLOCK + BLOCK / 2, 'z');
+      addLines(ORIGIN + i * BLOCK + BLOCK / 2, 0, 'x');
+      addLines(0, ORIGIN + i * BLOCK + BLOCK / 2, 'z');
     }
 
-    function createCar(x, z, color = 0x3f73d2) {
+    function makeCar(x, z, color = 0x2d73d2) {
       const g = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.BoxGeometry(7.8, 2.2, 14), material(color, 0.54, 0.18));
-      body.position.y = 2.0;
+      const body = new THREE.Mesh(new THREE.BoxGeometry(7.8, 2.2, 14), mat(color, 0.52, 0.18));
+      body.position.y = 2;
       body.castShadow = true;
       g.add(body);
 
-      const cabin = new THREE.Mesh(new THREE.BoxGeometry(5.8, 2.3, 6.5), material(0x213548, 0.42, 0.16));
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(5.8, 2.4, 6.5), mat(0x243d4e, 0.42, 0.16));
       cabin.position.set(0, 3.8, -1.2);
       cabin.castShadow = true;
       g.add(cabin);
 
-      for (const side of [-3.1, 3.1]) {
-        for (const depth of [-4.7, 4.7]) {
-          const wheel = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.8, 12), material(0x1d1d1f));
+      for (const side of [-3.2, 3.2]) {
+        for (const depth of [-4.8, 4.8]) {
+          const wheel = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.8, 12), mat(0x1a1d20));
           wheel.rotation.z = Math.PI / 2;
           wheel.position.set(side, 1.1, depth);
           wheel.castShadow = true;
@@ -517,58 +494,61 @@
         }
       }
 
-      const light = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.2, 0.2), material(0xfff2a1, 0.38, 0.2));
-      light.position.set(0, 2.5, 7.35);
+      const light = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.24, 0.2), mat(0xfff3ad, 0.35, 0.1));
+      light.position.set(0, 2.6, 7.3);
       g.add(light);
 
       g.position.set(x, 0, z);
       scene.add(g);
 
-      const car = {
-        mesh: g,
-        x,
-        z,
-        yaw: 0,
-        speed: 0,
-        occupied: false,
-        tint: color,
-      };
+      const car = { mesh: g, x, z, yaw: 0, speed: 0, occupied: false, tint: color };
       parkedCars.push(car);
       return car;
     }
 
-    for (let i = 0; i < 15; i++) {
-      const x = ORIGIN + BLOCK * (1 + Math.floor(Math.random() * 6)) + rand(-28, 28);
-      const z = ORIGIN + BLOCK * (1 + Math.floor(Math.random() * 6)) + rand(-28, 28);
-      createCar(x, z, pick([0x8e3a35, 0x2b6cb2, 0xc8c9cb, 0x405d4b, 0x6b4d8c]));
+    for (let i = 0; i < 16; i++) {
+      const x = ORIGIN + BLOCK * (1 + Math.floor(Math.random() * 6)) + rand(-26, 26);
+      const z = ORIGIN + BLOCK * (1 + Math.floor(Math.random() * 6)) + rand(-26, 26);
+      makeCar(x, z, pick([0x8d3a35, 0x2f6fb8, 0xd4d6d7, 0x3d5746, 0x714fa8]));
     }
 
-    function addPickup(x, z, val = 40) {
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.8, 1.8), material(0x49f59a, 0.35, 0.1));
+    function addPickup(x, z, value = 40) {
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.8, 1.8), mat(0x4ae47b, 0.35, 0.08));
       mesh.position.set(x, 1.1, z);
       mesh.castShadow = true;
       scene.add(mesh);
-      pickups.push({ x, z, value: val, mesh, active: true, phase: Math.random() * 10 });
+      pickups.push({ x, z, value, mesh, active: true, phase: Math.random() * 10 });
     }
 
     for (let i = 0; i < 36; i++) {
-      const x = rand(-800, 800);
-      const z = rand(-800, 800);
-      addPickup(x, z, 25 + Math.floor(Math.random() * 80));
+      addPickup(rand(-800, 800), rand(-800, 800), 25 + Math.floor(Math.random() * 80));
     }
 
-    const playerGroup = new THREE.Group();
-    const playerBody = new THREE.Mesh(new THREE.CapsuleGeometry(1.5, 4.2, 6, 12), material(0xd24b31, 0.7, 0.12));
-    playerBody.position.y = 3.2;
-    playerBody.castShadow = true;
-    playerGroup.add(playerBody);
+    function addMissionMarker(x, z, color = 0xffd14a) {
+      const marker = new THREE.Mesh(new THREE.ConeGeometry(4.2, 14, 14), mat(color, 0.55, 0.1));
+      marker.position.set(x, 8, z);
+      marker.rotation.x = Math.PI;
+      marker.castShadow = true;
+      scene.add(marker);
+      missionMarkers.push(marker);
+    }
 
-    const head = new THREE.Mesh(new THREE.SphereGeometry(1.35, 16, 16), material(0xe0b991, 0.9, 0.02));
-    head.position.y = 7.1;
+    addMissionMarker(-500, -300, 0xffd34d);
+    addMissionMarker(250, 420, 0xffd34d);
+    addMissionMarker(620, -120, 0xffd34d);
+
+    const playerGroup = new THREE.Group();
+    const body = new THREE.Mesh(new THREE.CapsuleGeometry(1.4, 4.0, 6, 12), mat(0xd55037, 0.72, 0.12));
+    body.position.y = 3.1;
+    body.castShadow = true;
+    playerGroup.add(body);
+
+    const head = new THREE.Mesh(new THREE.SphereGeometry(1.3, 16, 16), mat(0xe0b88d, 0.95, 0.02));
+    head.position.y = 6.9;
     head.castShadow = true;
     playerGroup.add(head);
 
-    playerGroup.position.set(-540, 0, -340);
+    playerGroup.position.set(-560, 0, -340);
     scene.add(playerGroup);
 
     const state = {
@@ -585,7 +565,7 @@
       pitch: 0.42,
       car: null,
       lastSaveAt: 0,
-      active: true,
+      missionIndex: 0,
     };
 
     const keys = {};
@@ -607,13 +587,11 @@
       saveFile: document.getElementById('saveFile'),
     };
 
-    function toast(text) {
-      ui.toast.textContent = text;
+    function toast(txt) {
+      ui.toast.textContent = txt;
       ui.toast.style.opacity = '1';
       clearTimeout(toast.timer);
-      toast.timer = setTimeout(() => {
-        ui.toast.style.opacity = '0';
-      }, 1800);
+      toast.timer = setTimeout(() => ui.toast.style.opacity = '0', 1600);
     }
 
     function getSaveData() {
@@ -644,20 +622,19 @@
       state.x = Number(data.x) || playerGroup.position.x;
       state.z = Number(data.z) || playerGroup.position.z;
       state.yaw = Number(data.yaw) || 0;
+      state.car = null;
 
       if (data.car && typeof data.car === 'object') {
-        const c = parkedCars.find(car => car && !car.occupied) || parkedCars[0];
-        if (c) {
-          c.x = Number(data.car.x) || c.x;
-          c.z = Number(data.car.z) || c.z;
-          c.yaw = Number(data.car.yaw) || c.yaw;
-          c.speed = Number(data.car.speed) || 0;
-          c.mesh.position.set(c.x, 0, c.z);
-          c.mesh.rotation.y = c.yaw;
-          state.car = c;
+        const car = parkedCars.find(c => !c.occupied) || parkedCars[0];
+        if (car) {
+          car.x = Number(data.car.x) || car.x;
+          car.z = Number(data.car.z) || car.z;
+          car.yaw = Number(data.car.yaw) || car.yaw;
+          car.speed = Number(data.car.speed) || 0;
+          car.mesh.position.set(car.x, 0, car.z);
+          car.mesh.rotation.y = car.yaw;
+          state.car = car;
         }
-      } else {
-        state.car = null;
       }
 
       playerGroup.position.set(state.x, 0, state.z);
@@ -666,11 +643,8 @@
     }
 
     function saveState() {
-      try {
-        localStorage.setItem(SAVE_KEY, JSON.stringify(getSaveData()));
-      } catch (e) {
-        // ignore storage issues
-      }
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(getSaveData())); }
+      catch (e) { /* ignore */ }
     }
 
     function exportSave() {
@@ -717,6 +691,14 @@
       }
     }
 
+    function isBlocked(x, z) {
+      if (Math.abs(x) > 980 || Math.abs(z) > 980) return true;
+      for (const c of colliders) {
+        if (x > c.minX - 3 && x < c.maxX + 3 && z > c.minZ - 3 && z < c.maxZ + 3) return true;
+      }
+      return false;
+    }
+
     function getDistrictName(x, z) {
       const ix = clamp(Math.floor((x + 900) / BLOCK), 0, 6);
       const iz = clamp(Math.floor((z + 900) / BLOCK), 0, 6);
@@ -726,31 +708,23 @@
       return 'NORTHWOOD';
     }
 
-    function isBlocked(x, z) {
-      if (Math.abs(x) > 980 || Math.abs(z) > 980) return true;
-      for (const c of colliders) {
-        if (x > c.minX - 3 && x < c.maxX + 3 && z > c.minZ - 3 && z < c.maxZ + 3) return true;
-      }
-      return false;
-    }
-
     function findNearestCar(maxDist = 18) {
-      let closest = null;
-      let best = Infinity;
+      let best = null;
+      let bestD = Infinity;
       for (const car of parkedCars) {
         const d = dist2D(car.x, car.z, state.x, state.z);
-        if (d < maxDist && d < best) {
-          best = d;
-          closest = car;
+        if (d < maxDist && d < bestD) {
+          bestD = d;
+          best = car;
         }
       }
-      return closest;
+      return best;
     }
 
     function enterVehicle() {
       const car = findNearestCar(18);
       if (!car) {
-        toast('No nearby vehicle');
+        toast('No vehicle nearby');
         return;
       }
       state.car = car;
@@ -765,16 +739,12 @@
       const car = state.car;
       car.occupied = false;
       playerGroup.visible = true;
-      const exitOffset = 7.5;
-      const ex = car.x + Math.sin(car.yaw) * exitOffset;
-      const ez = car.z + Math.cos(car.yaw) * exitOffset;
-      if (!isBlocked(ex, ez)) {
-        state.x = ex;
-        state.z = ez;
-      } else {
-        state.x = car.x + 6;
-        state.z = car.z + 6;
-      }
+      const ox = car.x + Math.sin(car.yaw) * 8;
+      const oz = car.z + Math.cos(car.yaw) * 8;
+      const posX = isBlocked(ox, oz) ? car.x + 6 : ox;
+      const posZ = isBlocked(ox, oz) ? car.z + 6 : oz;
+      state.x = posX;
+      state.z = posZ;
       state.car = null;
       playerGroup.position.set(state.x, 0, state.z);
       toast('Exited vehicle');
@@ -783,12 +753,12 @@
 
     function collectNearby() {
       let gained = 0;
-      for (const pickUp of pickups) {
-        if (!pickUp.active) continue;
-        if (dist2D(pickUp.x, pickUp.z, state.x, state.z) < 12) {
-          pickUp.active = false;
-          pickUp.mesh.visible = false;
-          gained += pickUp.value;
+      for (const item of pickups) {
+        if (!item.active) continue;
+        if (dist2D(item.x, item.z, state.x, state.z) < 12) {
+          item.active = false;
+          item.mesh.visible = false;
+          gained += item.value;
         }
       }
       if (gained > 0) {
@@ -807,101 +777,76 @@
       toast('Welcome to Crime City 3D');
     }
 
-    function togglePause() {
-      if (!state.started) return;
-      setPause(!state.paused);
-    }
-
-    document.getElementById('start').addEventListener('click', startGame);
-    document.getElementById('resume').addEventListener('click', () => setPause(false));
-    document.getElementById('export').addEventListener('click', exportSave);
-    document.getElementById('import').addEventListener('click', () => ui.saveFile.click());
-    document.getElementById('titleImport').addEventListener('click', () => ui.saveFile.click());
-    document.getElementById('newGame').addEventListener('click', () => {
-      const ok = window.confirm('Start a new game? This will wipe the current save.');
-      if (ok) {
-        try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
-        window.location.reload();
+    function updateMissionVisuals() {
+      const points = [
+        [-500, -300],
+        [250, 420],
+        [620, -120],
+      ];
+      for (let i = 0; i < missionMarkers.length; i++) {
+        missionMarkers[i].visible = i === state.missionIndex;
       }
-    });
-
-    ui.saveFile.addEventListener('change', () => importSaveFile(ui.saveFile.files && ui.saveFile.files[0]));
-
-    document.addEventListener('keydown', (event) => {
-      if (event.code === 'Escape' || event.code === 'KeyP') {
-        if (state.started) togglePause();
-      }
-      if (event.code === 'KeyF' && state.started) {
-        if (state.car) exitVehicle(); else enterVehicle();
-      }
-      if (event.code === 'KeyE' && state.started) {
-        collectNearby();
-      }
-      if (event.code === 'KeyM') {
-        toast('Ambient mix toggled');
-      }
-      if (['Space', 'ArrowUp', 'ArrowDown'].includes(event.code)) {
-        event.preventDefault();
-      }
-      keys[event.code] = true;
-    });
-
-    document.addEventListener('keyup', (event) => {
-      keys[event.code] = false;
-    });
-
-    let pointerLocked = false;
-    const viewTarget = { x: 0, y: 0 };
-    renderer.domElement.addEventListener('click', () => {
-      if (document.pointerLockElement !== renderer.domElement) {
-        renderer.domElement.requestPointerLock();
-      }
-    });
-
-    document.addEventListener('pointerlockchange', () => {
-      pointerLocked = document.pointerLockElement === renderer.domElement;
-    });
-
-    document.addEventListener('mousemove', (event) => {
-      if (!pointerLocked || !state.started || state.paused) return;
-      state.yaw -= event.movementX * 0.0026;
-      state.pitch = clamp(state.pitch - event.movementY * 0.0018, 0.18, 1.0);
-    });
-
-    function updateSavedStateFromLive() {
-      state.x = playerGroup.position.x;
-      state.z = playerGroup.position.z;
-      if (state.car) {
-        state.x = state.car.x;
-        state.z = state.car.z;
+      const target = points[state.missionIndex];
+      if (target) {
+        const dx = state.x - target[0];
+        const dz = state.z - target[1];
+        if (Math.hypot(dx, dz) < 25) {
+          state.missionIndex = (state.missionIndex + 1) % points.length;
+          state.money += 150;
+          toast('Mission complete! +$150');
+          saveState();
+        }
       }
     }
 
-    function update(dt) {
-      if (!state.started || state.paused) return;
+    function updateHUD() {
+      ui.cash.textContent = '$' + Math.floor(state.money).toLocaleString();
+      const h = Math.floor(state.hour);
+      const m = Math.floor((state.hour % 1) * 60);
+      ui.clock.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      ui.area.textContent = getDistrictName(state.x, state.z);
+      ui.health.style.width = `${state.health}%`;
+      ui.armor.style.width = `${state.armor}%`;
+      ui.wanted.textContent = '☆'.repeat(5 - state.wanted) + '★'.repeat(state.wanted);
+      ui.vehicleText.textContent = state.car ? `SPEED ${Math.round(Math.abs(state.car.speed) * 3.6)} KM/H` : '';
 
+      const nearCar = findNearestCar(18);
+      const nearCash = pickups.some(p => p.active && dist2D(p.x, p.z, state.x, state.z) < 14);
+      ui.hint.textContent = state.car
+        ? '[F] EXIT VEHICLE'
+        : nearCar
+          ? '[F] ENTER VEHICLE'
+          : nearCash
+            ? '[E] COLLECT CASH'
+            : '[MISSION]';
+    }
+
+    function updatePlayer(dt) {
       const moveX = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
       const moveZ = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0);
-      const sprint = keys.ShiftLeft || keys.ShiftRight;
+      const sprint = !!(keys.ShiftLeft || keys.ShiftRight);
 
       if (state.car) {
         const car = state.car;
         const throttle = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0);
         const steer = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
         const accel = sprint ? 32 : 22;
+
         car.speed += throttle * accel * dt;
         car.speed *= 0.985;
         car.speed = clamp(car.speed, -18, sprint ? 52 : 38);
         if (keys.Space) car.speed *= 0.9;
         car.yaw += steer * (0.7 + Math.abs(car.speed) * 0.06) * dt * (car.speed >= 0 ? 1 : -1);
+
         const nextX = car.x + Math.sin(car.yaw) * car.speed * dt;
         const nextZ = car.z + Math.cos(car.yaw) * car.speed * dt;
         if (!isBlocked(nextX, nextZ)) {
           car.x = nextX;
           car.z = nextZ;
         } else {
-          car.speed *= -0.2;
+          car.speed *= -0.25;
         }
+
         car.mesh.position.set(car.x, 0, car.z);
         car.mesh.rotation.y = car.yaw;
         state.x = car.x;
@@ -920,86 +865,119 @@
         const speed = sprint ? 32 : 20;
         const nextX = playerGroup.position.x + dir.x * speed * dt;
         const nextZ = playerGroup.position.z + dir.z * speed * dt;
+
         if (!isBlocked(nextX, nextZ)) {
           playerGroup.position.x = nextX;
           playerGroup.position.z = nextZ;
         }
 
-        playerGroup.rotation.y = state.yaw;
         state.x = playerGroup.position.x;
         state.z = playerGroup.position.z;
+        playerGroup.rotation.y = state.yaw;
       }
+    }
 
-      for (const pickup of pickups) {
-        if (!pickup.active) continue;
-        pickup.mesh.position.y = 1.1 + Math.sin(performance.now() * 0.003 + pickup.phase) * 0.3;
-        pickup.mesh.rotation.y += 0.02;
-      }
-
+    function updateWorld(dt) {
       state.hour = (state.hour + dt * 0.06) % 24;
+
+      for (const item of pickups) {
+        if (!item.active) continue;
+        item.mesh.position.y = 1.1 + Math.sin(performance.now() * 0.003 + item.phase) * 0.28;
+        item.mesh.rotation.y += 0.025;
+      }
+
       if (performance.now() - state.lastSaveAt > 15000) {
         saveState();
         state.lastSaveAt = performance.now();
       }
 
-      updateSavedStateFromLive();
+      updateMissionVisuals();
       updateHUD();
     }
 
-    function updateHUD() {
-      ui.cash.textContent = '$' + Math.floor(state.money).toLocaleString();
-      const h = Math.floor(state.hour);
-      const m = Math.floor((state.hour % 1) * 60);
-      ui.clock.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-      ui.area.textContent = getDistrictName(state.x, state.z);
-      ui.health.style.width = `${state.health}%`;
-      ui.armor.style.width = `${state.armor}%`;
-      ui.wanted.textContent = '☆'.repeat(5 - state.wanted) + '★'.repeat(state.wanted);
-      ui.vehicleText.textContent = state.car ? `SPEED ${Math.round(Math.abs(state.car.speed) * 3.8)} KM/H` : '';
-
-      const nearCar = findNearestCar(20);
-      const nearCash = pickups.some(p => p.active && dist2D(p.x, p.z, state.x, state.z) < 14);
-      ui.hint.textContent = state.car
-        ? '[F] EXIT VEHICLE'
-        : nearCar
-          ? '[F] ENTER VEHICLE'
-          : nearCash
-            ? '[E] COLLECT CASH'
-            : '';
-    }
-
     function updateCamera(dt) {
-      const followTarget = state.car ? state.car : { x: state.x, z: state.z };
-      const px = followTarget.x;
-      const pz = followTarget.z;
-      const distance = state.car ? 18 : 13;
-      const camX = px + Math.sin(state.yaw) * distance * Math.cos(state.pitch);
-      const camY = 6 + distance * Math.sin(state.pitch) * 1.2;
-      const camZ = pz + Math.cos(state.yaw) * distance * Math.cos(state.pitch);
+      const targetX = state.car ? state.car.x : state.x;
+      const targetZ = state.car ? state.car.z : state.z;
+      const distance = state.car ? 19 : 13;
+      const camX = targetX + Math.sin(state.yaw) * distance * Math.cos(state.pitch);
+      const camY = 7 + distance * Math.sin(state.pitch) * 1.2;
+      const camZ = targetZ + Math.cos(state.yaw) * distance * Math.cos(state.pitch);
 
       camera.position.lerp(new THREE.Vector3(camX, camY, camZ), 1 - Math.exp(-dt * 12));
-      camera.lookAt(px, 4.5, pz);
+      camera.lookAt(targetX, 4.5, targetZ);
     }
 
-    function animate() {
+    function update(dt) {
+      if (!state.started || state.paused) return;
+      updatePlayer(dt);
+      updateWorld(dt);
+    }
+
+    document.getElementById('start').addEventListener('click', startGame);
+    document.getElementById('resume').addEventListener('click', () => setPause(false));
+    document.getElementById('export').addEventListener('click', exportSave);
+    document.getElementById('import').addEventListener('click', () => ui.saveFile.click());
+    document.getElementById('titleImport').addEventListener('click', () => ui.saveFile.click());
+    document.getElementById('newGame').addEventListener('click', () => {
+      const ok = window.confirm('Start a new game? This will wipe the current save.');
+      if (ok) {
+        try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+        window.location.reload();
+      }
+    });
+
+    ui.saveFile.addEventListener('change', () => importSaveFile(ui.saveFile.files && ui.saveFile.files[0]));
+
+    document.addEventListener('keydown', event => {
+      if (event.code === 'Escape' || event.code === 'KeyP') {
+        if (state.started) setPause(!state.paused);
+      }
+      if (event.code === 'KeyF' && state.started) {
+        if (state.car) exitVehicle(); else enterVehicle();
+      }
+      if (event.code === 'KeyE' && state.started) {
+        collectNearby();
+      }
+      if (['Space', 'ArrowUp', 'ArrowDown'].includes(event.code)) event.preventDefault();
+      keys[event.code] = true;
+    });
+
+    document.addEventListener('keyup', event => {
+      keys[event.code] = false;
+    });
+
+    let pointerActive = false;
+    renderer.domElement.addEventListener('click', () => {
+      if (document.pointerLockElement !== renderer.domElement) renderer.domElement.requestPointerLock();
+    });
+
+    document.addEventListener('pointerlockchange', () => {
+      pointerActive = document.pointerLockElement === renderer.domElement;
+    });
+
+    document.addEventListener('mousemove', event => {
+      if (!pointerActive || !state.started || state.paused) return;
+      state.yaw -= event.movementX * 0.0025;
+      state.pitch = clamp(state.pitch - event.movementY * 0.0017, 0.18, 1.0);
+    });
+
+    function animate(now) {
       requestAnimationFrame(animate);
-      const now = performance.now();
-      const dt = Math.min(0.033, (now - (animate.last || now)) / 1000 || 0.016);
-      animate.last = now;
+      const dt = Math.min(0.033, ((now - (animate.prev || now)) / 1000) || 0.016);
+      animate.prev = now;
       update(dt);
       updateCamera(dt);
       renderer.render(scene, camera);
     }
-
-    animate();
+    requestAnimationFrame(animate);
 
     try {
       const existing = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
       if (existing && applySaveData(existing)) {
-        ui.titleStatus.textContent = `Existing save found: $${Math.floor(state.money)}. Click START GAME or import another one.`;
+        ui.titleStatus.textContent = `Existing save found: $${Math.floor(state.money)}. Press START or import another one.`;
       }
     } catch (e) {
-      // ignore load errors
+      // ignore storage errors
     }
   </script>
 </body>
