@@ -1,91 +1,1006 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Crime City 3D</title>
-<style>
-:root{color-scheme:dark;--gold:#ffd23f;--glass:rgba(5,12,22,.78)}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101923;font-family:Arial,sans-serif;color:#fff;user-select:none}canvas{display:block;width:100%;height:100%}#hud{position:absolute;inset:0;pointer-events:none;text-shadow:0 2px 3px #000}#brand{position:absolute;left:20px;top:16px;color:var(--gold);font-size:27px;font-weight:900;letter-spacing:2px}#stats{position:absolute;right:18px;top:16px;text-align:right;font-size:18px;line-height:1.55}.bar{height:13px;width:190px;background:#171717;border:1px solid #fff8;margin:2px 0 7px auto}.fill{height:100%;background:#df3737;width:100%;transition:width .15s}.armor{background:#45a3ff}#help{position:absolute;left:20px;bottom:20px;background:var(--glass);padding:10px 14px;border:1px solid #ffffff30;border-radius:6px;line-height:1.6;font-size:14px}#hint{position:absolute;left:50%;bottom:22%;transform:translateX(-50%);font-size:20px;color:var(--gold);font-weight:bold;text-align:center}#toast{position:absolute;top:90px;left:50%;transform:translateX(-50%);background:var(--glass);padding:10px 18px;border-radius:6px;font-size:18px;opacity:0;transition:opacity .2s}.screen{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:radial-gradient(ellipse,rgba(18,34,52,.78),rgba(2,5,10,.96));padding:20px}.screen h1{font-size:clamp(54px,11vw,120px);line-height:.85;margin:0;color:var(--gold);text-shadow:5px 5px #000;letter-spacing:3px}.screen h2{color:#9fd3ff;letter-spacing:5px;font-size:clamp(17px,3vw,28px);margin:14px 0}.card{background:#0008;border:1px solid #fff3;border-radius:7px;padding:14px 22px;line-height:1.7;max-width:640px}.btn{pointer-events:auto;background:var(--gold);color:#111;border:3px solid #000;padding:9px 18px;margin:6px;font-weight:900;font-size:17px;cursor:pointer;box-shadow:3px 3px #000}.btn:hover{background:#fff}.sub{color:#bbc6d5;font-size:14px;margin-top:8px}.hidden{display:none!important}.mission{color:#ffe06a}#crosshair{position:absolute;left:50%;top:50%;width:7px;height:7px;border:1px solid #fff;border-radius:50%;transform:translate(-50%,-50%);opacity:.8}
-</style>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crime City 3D</title>
+  <style>
+    :root {
+      --bg: #0b1722;
+      --panel: rgba(8, 14, 20, 0.76);
+      --gold: #ffd23f;
+      --gold-soft: #ffe08a;
+      --good: #68e38d;
+      --danger: #ff5c5c;
+      --blue: #8ec9ff;
+      --text: #eef3ff;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      user-select: none;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 12;
+      background: radial-gradient(ellipse at center, rgba(10,25,38,0.74), rgba(5,8,12,0.96));
+      padding: 20px;
+    }
+
+    .screen h1 {
+      margin: 0;
+      font-size: clamp(56px, 12vw, 160px);
+      line-height: 0.8;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-shadow: 4px 4px 0 #000, -2px -2px 0 #000;
+    }
+
+    .screen h2 {
+      margin: 10px 0 18px;
+      color: var(--blue);
+      letter-spacing: 6px;
+      font-size: clamp(18px, 2.1vw, 36px);
+      font-weight: 500;
+    }
+
+    .panel {
+      background: rgba(0,0,0,0.36);
+      border: 2px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 16px 22px;
+      max-width: 760px;
+      line-height: 1.7;
+      font-size: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+
+    .small {
+      margin-top: 12px;
+      font-size: 16px;
+      color: #b4c0d7;
+    }
+
+    .btn {
+      appearance: none;
+      border: 3px solid #000;
+      background: var(--gold);
+      color: #111;
+      font-weight: 800;
+      font-size: 22px;
+      padding: 8px 20px;
+      margin: 6px;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 #000;
+      transition: transform 0.08s ease, background 0.08s ease;
+    }
+
+    .btn:hover { background: #fff; }
+    .btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #000; }
+
+    #pause .btn { font-size: 18px; }
+
+    .hidden { display: none !important; }
+
+    #hud {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    #brand {
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      color: var(--gold);
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    #stats {
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      text-align: right;
+      font-size: 18px;
+      line-height: 1.35;
+      padding: 8px 10px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 6px;
+    }
+
+    .bar {
+      margin: 4px 0 8px auto;
+      width: 170px;
+      height: 12px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.35);
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .bar > div {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #e84d4d, #ff7d64);
+      transition: width 0.12s ease;
+    }
+
+    .bar .armor { background: linear-gradient(90deg, #4bb5ff, #77d7ff); }
+
+    #help {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      background: rgba(8, 12, 16, 0.6);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 14px;
+      line-height: 1.65;
+      max-width: 460px;
+    }
+
+    #hint {
+      position: absolute;
+      left: 50%;
+      bottom: 18%;
+      transform: translateX(-50%);
+      color: var(--gold-soft);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-shadow: 2px 2px 0 #000;
+      white-space: nowrap;
+    }
+
+    #toast {
+      position: absolute;
+      top: 96px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.56);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 18px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    #crosshair {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.4);
+    }
+
+    #crosshair::before, #crosshair::after {
+      content: "";
+      position: absolute;
+      background: rgba(255,255,255,0.8);
+    }
+
+    #crosshair::before {
+      left: 50%;
+      top: -6px;
+      width: 1px;
+      height: 22px;
+      transform: translateX(-50%);
+    }
+
+    #crosshair::after {
+      left: -6px;
+      top: 50%;
+      width: 22px;
+      height: 1px;
+      transform: translateY(-50%);
+    }
+  </style>
 </head>
 <body>
-<div id="title" class="screen"><h1>CRIME CITY</h1><h2>3D OPEN-WORLD EDITION</h2><div class="card"><b>WASD</b> move / drive &nbsp; <b>MOUSE</b> look around<br><b>F</b> enter or exit a car &nbsp; <b>SHIFT</b> sprint / nitro<br><b>SPACE</b> handbrake &nbsp; <b>E</b> collect nearby cash<br><b>P / ESC</b> pause &nbsp; <b>M</b> mute ambience</div><div style="margin-top:16px"><button class="btn" id="titleImport">IMPORT SAVE (.JSON)</button> <button class="btn" id="start">START GAME</button></div><div class="sub" id="titleStatus">A separate 3D game. Save files use the Crime City v2 format.</div></div>
-<div id="pause" class="screen hidden"><h1 style="font-size:clamp(48px,8vw,90px)">PAUSED</h1><h2>CRIME CITY 3D</h2><div><button class="btn" id="resume">RESUME</button><button class="btn" id="export">EXPORT SAVE (.JSON)</button><button class="btn" id="import">IMPORT SAVE (.JSON)</button><button class="btn" id="newGame">NEW GAME</button></div><div class="sub" id="saveStatus"></div><div class="sub">The exported JSON is also compatible with the 2D edition's shared progress fields.</div></div>
-<input id="saveFile" type="file" accept=".json,application/json" hidden>
-<div id="hud" class="hidden"><div id="brand">CRIME CITY <small style="font-size:12px;color:#9fd3ff">3D</small></div><div id="stats"><span id="cash">$0</span><br><span id="clock">18:00</span><br><span id="area">DOWNTOWN</span><br><span>HEALTH</span><div class="bar"><div class="fill" id="health"></div></div><span>ARMOR</span><div class="bar"><div class="fill armor" id="armor"></div></div><span id="wanted">☆☆☆☆☆</span><br><span id="vehicle"></span></div><div id="help"><b>WASD</b> move / steer &nbsp; <b>F</b> car &nbsp; <b>SHIFT</b> sprint / nitro<br><b>SPACE</b> handbrake &nbsp; <b>E</b> collect cash &nbsp; <b>P</b> pause<br>Drag mouse to look around · Scroll to zoom</div><div id="hint"></div><div id="toast"></div><div id="crosshair"></div></div>
-<script type="module">
-import * as THREE from 'three';
-'use strict';
-const SAVE_KEY='crimecity_save_v2', clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), rand=(a,b)=>a+Math.random()*(b-a);
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x91b9d1);scene.fog=new THREE.Fog(0x91b9d1,420,1500);
-const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,2200);
-const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;document.body.prepend(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xcde6ff,0x443b32,2.1));const sun=new THREE.DirectionalLight(0xffe6be,3.2);sun.position.set(-260,440,-160);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-600;sun.shadow.camera.right=600;sun.shadow.camera.top=600;sun.shadow.camera.bottom=-600;scene.add(sun);
-const mat=(color,rough=.85,metal=0)=>new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal});
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(2000,2000),mat(0x65745f));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
-// Procedural city blocks, roads, sidewalks and varied skyline.
-const roadMat=mat(0x34383d),walkMat=mat(0x929395),lineMat=mat(0xe4c843),windowMat=mat(0x8db5c8,.35,.15),cashMat=mat(0x43ef84,.25,.1);
-const road=new THREE.Mesh(new THREE.PlaneGeometry(2000,2000),roadMat);road.rotation.x=-Math.PI/2;road.position.y=.012;road.receiveShadow=true;scene.add(road);
-const cityGroup=new THREE.Group();scene.add(cityGroup);const buildingBoxes=[];const carList=[];const pickupList=[];
-// 7 by 7 district cells; blocks are separated by broad streets.
-const block=230, roadW=48, origin=-805;
-for(let iz=0;iz<7;iz++)for(let ix=0;ix<7;ix++){
- const bx=origin+ix*block, bz=origin+iz*block;
- const park=(ix===1&&iz===1)||(ix===5&&iz===5), lot=((ix*11+iz*7)%9===0), downtown=ix>=3&&ix<=5&&iz<3;
- const district=(iz===3?'PORT ASH':(downtown?'DOWNTOWN':(iz>3&&ix>3?'NEON STRIP':'NORTHWOOD')));
- const pad=roadW/2+5, span=block-roadW-18;
- const sidewalk=new THREE.Mesh(new THREE.BoxGeometry(span,0.22,span),mat(park?0x527a43:0x85878a));sidewalk.position.set(bx+block/2,.08,bz+block/2);sidewalk.receiveShadow=true;cityGroup.add(sidewalk);
- if(park){for(let t=0;t<14;t++){const tree=new THREE.Group();const trunk=new THREE.Mesh(new THREE.CylinderGeometry(1.7,2.3,12,7),mat(0x63452d));trunk.position.y=6;const crown=new THREE.Mesh(new THREE.IcosahedronGeometry(rand(5,8),1),mat(pickColor([0x397244,0x4e8a4c,0x56834b])));crown.position.y=13;tree.add(trunk,crown);tree.position.set(bx+pad+rand(8,span-8),.2,bz+pad+rand(8,span-8));tree.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});cityGroup.add(tree)}continue}
- if(lot){const stripes=new THREE.Mesh(new THREE.PlaneGeometry(span*.75,span*.7),mat(0x46494b));stripes.rotation.x=-Math.PI/2;stripes.position.set(bx+block/2,.2,bz+block/2);cityGroup.add(stripes);continue}
- const n=1+Math.floor(Math.random()*3),cell=span/2;
- for(let k=0;k<n;k++){
-   const w=n===1?span*.82:rand(cell*.65,cell*.88),d=n===1?span*.82:rand(cell*.65,cell*.88),h=downtown?rand(95,235):rand(25,92);
-   const ox=bx+pad+(k%2)*cell+rand(5,Math.max(6,cell-w-4)),oz=bz+pad+Math.floor(k/2)*cell+rand(5,Math.max(6,cell-d-4));
-   const color=downtown?pickColor([0x657c91,0x8b9297,0x5d6674,0x9a9b91]):pickColor([0x947c68,0x8a8275,0x786f69,0x687a80,0x896a6b]);
-   const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));b.position.set(ox+w/2,h/2,oz+d/2);b.castShadow=true;b.receiveShadow=true;cityGroup.add(b);buildingBoxes.push({minX:ox,maxX:ox+w,minZ:oz,maxZ:oz+d});
-   const roof=new THREE.Mesh(new THREE.BoxGeometry(w+1,.8,d+1),mat(0x44484c));roof.position.set(ox+w/2,h+.2,oz+d/2);cityGroup.add(roof);
-   // Repeating lit window strips on each face give the city its scale.
-   const rows=Math.floor(h/13), cols=Math.max(2,Math.floor(w/11));
-   for(let r=1;r<rows;r+=2)for(let c=0;c<cols;c+=2){const ww=2.3,wh=3.1,y=r*13;for(const side of [-1,1]){const win=new THREE.Mesh(new THREE.BoxGeometry(ww,wh,.16),windowMat);win.position.set(ox+(c+.65)*w/cols,y,side<0?oz-.09:oz+d+.09);cityGroup.add(win);}}
-   if(district==='NEON STRIP'){const sign=new THREE.Mesh(new THREE.BoxGeometry(Math.min(22,w*.6),4,.8),mat(pickColor([0xff37c7,0x37ddff,0xffa32f]),.3,.15));sign.position.set(ox+w/2,Math.min(h*.65,38),oz+d+.5);cityGroup.add(sign)}
- }
-}
-function pickColor(a){return a[Math.floor(Math.random()*a.length)]}
-// Roads, center dashes, curbs, street lamps.
-for(let i=0;i<8;i++){const pos=origin+i*block+block/2;for(const [x,z,w,d] of [[pos,0,roadW,2000],[0,pos,2000,roadW]]){const strip=new THREE.Mesh(new THREE.PlaneGeometry(w,d),roadMat);strip.rotation.x=-Math.PI/2;strip.position.set(x,.03,z);scene.add(strip)}for(let j=0;j<20;j++){const dash=new THREE.Mesh(new THREE.PlaneGeometry(2,16),lineMat);dash.rotation.x=-Math.PI/2;dash.position.set(pos,.05,origin+j*100);scene.add(dash);const dash2=new THREE.Mesh(new THREE.PlaneGeometry(16,2),lineMat);dash2.rotation.x=-Math.PI/2;dash2.position.set(origin+j*100,.05,pos);scene.add(dash2)}}
-// Simple stylized player model.
-const player=new THREE.Group();const body=new THREE.Mesh(new THREE.CapsuleGeometry(1.5,4,4,8),mat(0xd34a31));body.position.y=4.1;body.castShadow=true;player.add(body);const head=new THREE.Mesh(new THREE.SphereGeometry(1.35,12,10),mat(0xe2b58e));head.position.y=7.1;head.castShadow=true;player.add(head);scene.add(player);
-function makeCar(x,z,color=0x287ac0){const g=new THREE.Group();const chassis=new THREE.Mesh(new THREE.BoxGeometry(8,2.1,14),mat(color,.45,.12));chassis.position.y=2;chassis.castShadow=true;g.add(chassis);const cabin=new THREE.Mesh(new THREE.BoxGeometry(6.2,2.2,6.8),mat(0x263b4a,.28,.1));cabin.position.set(0,3.7,-.8);cabin.castShadow=true;g.add(cabin);for(const xw of [-3.6,3.6])for(const zw of [-4.7,4.7]){const wheel=new THREE.Mesh(new THREE.CylinderGeometry(1.15,1.15,.7,12),mat(0x161719));wheel.rotation.z=Math.PI/2;wheel.position.set(xw,1.15,zw);g.add(wheel)}const lights=new THREE.Mesh(new THREE.BoxGeometry(5,.25,.12),mat(0xffe7a2,.35));lights.position.set(0,2.25,7.08);g.add(lights);g.position.set(x,0,z);scene.add(g);const car={group:g,x,z,yaw:0,speed:0,color,occupied:false};carList.push(car);return car}
-// Parking and drivable traffic.
-for(let i=0;i<18;i++){const x=origin+block*(1+Math.floor(Math.random()*6))+rand(-25,25),z=origin+block*(1+Math.floor(Math.random()*6))+rand(-25,25);if(Math.random()<.5)makeCar(x,z,pickColor([0xa93c33,0x316ca7,0xd7d8d0,0x344c3f,0x8b4b8c]))}
-for(let i=0;i<32;i++){const x=rand(-760,760),z=rand(-760,760);const m=new THREE.Mesh(new THREE.BoxGeometry(1.7,.5,1.7),cashMat);m.position.set(x,.65,z);m.castShadow=true;scene.add(m);pickupList.push({mesh:m,x,z,active:true,value:rand(20,90)|0,spin:Math.random()*6})}
-const state={money:0,hp:100,armor:0,hour:18,kills:0,wanted:0,active:true,paused:false,car:null,walkingSpeed:20,idx:0,ramp:[false,false,false],inventory:Array.from({length:8},(_,i)=>i===0?{mag:0,res:0}:null),cur:1};
-player.position.set(-560,0,-330);let yaw=0,pitch=.22,camDist=26,mouseDown=false,lastMouse={x:0,y:0},lastSave=0;
-const key={};addEventListener('keydown',e=>{key[e.code]=true;if(['Space','ArrowUp','ArrowDown'].includes(e.code))e.preventDefault();if(e.code==='Escape'||e.code==='KeyP'){if(title.classList.contains('hidden'))setPause(!state.paused)}if(e.code==='KeyF')toggleCar();if(e.code==='KeyE')collectNearby();if(e.code==='KeyM')toast('Ambient city sounds toggled')});addEventListener('keyup',e=>key[e.code]=false);addEventListener('blur',()=>{for(const k in key)key[k]=false;mouseDown=false});
-renderer.domElement.addEventListener('pointerdown',e=>{mouseDown=true;lastMouse.x=e.clientX;lastMouse.y=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)});renderer.domElement.addEventListener('pointerup',()=>mouseDown=false);renderer.domElement.addEventListener('pointermove',e=>{if(!mouseDown||state.paused||!state.active)return;yaw-= (e.clientX-lastMouse.x)*.006;pitch=clamp(pitch+(e.clientY-lastMouse.y)*.003,-.1,.75);lastMouse={x:e.clientX,y:e.clientY}});renderer.domElement.addEventListener('wheel',e=>camDist=clamp(camDist+Math.sign(e.deltaY)*2,12,48),{passive:true});addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
-const $=id=>document.getElementById(id),title=$('title'),pause=$('pause'),hud=$('hud'),saveFile=$('saveFile');
-function toast(s){const el=$('toast');el.textContent=s;el.style.opacity=1;clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.style.opacity=0,2100)}
-function getSaveData(){return{version:2,savedAt:new Date().toISOString(),money:state.money,idx:state.idx,ramp:state.ramp.slice(),inv:state.inventory.map(x=>x?{mag:x.mag||0,res:x.res||0}:null),cur:state.cur,hp:state.hp,armor:state.armor,hour:state.hour,kills:state.kills}}
-function applySaveData(d){if(!d||typeof d!=='object'||typeof d.money!=='number'||typeof d.idx!=='number')return false;state.money=Math.max(0,Number(d.money)||0);state.idx=clamp(Number(d.idx)||0,0,6);state.ramp=Array.isArray(d.ramp)?[!!d.ramp[0],!!d.ramp[1],!!d.ramp[2]]:[false,false,false];if(Array.isArray(d.inv))state.inventory=d.inv.slice(0,8).map((v,i)=>v&&i?{mag:Math.max(0,Number(v.mag)||0),res:Math.max(0,Number(v.res)||0)}:null);state.cur=clamp(Number(d.cur)||1,0,7);state.hp=clamp(Number(d.hp)||100,1,100);state.armor=clamp(Number(d.armor)||0,0,100);state.hour=((Number(d.hour)||18)%24+24)%24;state.kills=Math.max(0,Number(d.kills)||0);try{localStorage.setItem(SAVE_KEY,JSON.stringify(getSaveData()))}catch{}return true}
-function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(getSaveData()))}catch{}}
-function exportSave(){const data=JSON.stringify(getSaveData(),null,2),url=URL.createObjectURL(new Blob([data],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='crime-city-save.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1200);save();$('saveStatus').textContent='Downloaded crime-city-save.json';toast('Save exported')}
-function importFile(file){if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(String(reader.result||''));if(!applySaveData(d))throw Error('Invalid save file format.');$('titleStatus').textContent=`Save loaded: $${state.money}. Click START GAME to continue.`;$('saveStatus').textContent=`Save imported — $${state.money}`;toast('Save imported')}catch(e){$('titleStatus').textContent=e.message||'Could not read save file.';$('saveStatus').textContent=e.message||'Could not read save file.'}};reader.readAsText(file)}
-function setPause(on){if(!title.classList.contains('hidden'))return;state.paused=on;pause.classList.toggle('hidden',!on);hud.classList.toggle('hidden',on);if(on){save();$('saveStatus').textContent='Progress saved locally.'}}
-function toggleCar(){if(state.car){state.car.occupied=false;player.visible=true;player.position.set(state.car.x+Math.cos(state.car.yaw)*6,0,state.car.z-Math.sin(state.car.yaw)*6);state.car=null;toast('Exited vehicle');save();return}let nearest=null,bd=16;for(const c of carList){const d=Math.hypot(c.x-player.position.x,c.z-player.position.z);if(d<bd){bd=d;nearest=c}}if(nearest){state.car=nearest;nearest.occupied=true;player.visible=false;toast('Vehicle entered')}else toast('No vehicle nearby')}
-function collectNearby(){const p=player.position;let got=0;for(const o of pickupList){if(!o.active)continue;if(Math.hypot(o.x-p.x,o.z-p.z)<7){o.active=false;o.mesh.visible=false;state.money+=o.value;got+=o.value}}if(got){toast(`+$${got}`);save()}}
-function startGame(){title.classList.add('hidden');pause.classList.add('hidden');hud.classList.remove('hidden');state.active=true;state.paused=false;$('titleStatus').textContent='A separate 3D game. Save files use the Crime City v2 format.';toast('Welcome to Crime City 3D')}
-$('start').onclick=startGame;$('resume').onclick=()=>setPause(false);$('export').onclick=exportSave;$('import').onclick=()=>{saveFile.value='';saveFile.click()};$('titleImport').onclick=e=>{e.stopPropagation();saveFile.value='';saveFile.click()};saveFile.onchange=()=>importFile(saveFile.files&&saveFile.files[0]);$('newGame').onclick=()=>{if(confirm('Start a new game? This will erase your saved progress.')){try{localStorage.removeItem(SAVE_KEY)}catch{}location.reload()}};
-function collision(x,z){for(const b of buildingBoxes)if(x>b.minX-2&&x<b.maxX+2&&z>b.minZ-2&&z<b.maxZ+2)return true;return Math.abs(x)>950||Math.abs(z)>950}
-function update(dt){if(!state.active||state.paused)return;state.hour=(state.hour+dt*.025)%24;const p=player.position;const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw)),right=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));let mx=(key.KeyD?1:0)-(key.KeyA?1:0),mz=(key.KeyW?1:0)-(key.KeyS?1:0);const boost=key.ShiftLeft||key.ShiftRight;
- if(state.car){const c=state.car;c.speed+=(mz* (boost?36:20))*dt;c.speed*=Math.exp(-(key.Space?3.7:1.5)*dt);c.speed=clamp(c.speed,-18,boost?55:38);c.yaw+=mx*dt*clamp(Math.abs(c.speed)/9,0,3.5)*Math.sign(c.speed||1);const nx=c.x-Math.sin(c.yaw)*c.speed*dt,nz=c.z-Math.cos(c.yaw)*c.speed*dt;if(!collision(nx,nz)){c.x=nx;c.z=nz}else{c.speed*=-.2;toast('Vehicle collision')}c.group.position.set(c.x,0,c.z);c.group.rotation.y=c.yaw;p.set(c.x,0,c.z)}else{const l=Math.hypot(mx,mz)||1,speed=boost?31:20;const nx=p.x+(forward.x*mz+right.x*mx)/l*speed*dt,nz=p.z+(forward.z*mz+right.z*mx)/l*speed*dt;if(!collision(nx,p.z))p.x=nx;if(!collision(p.x,nz))p.z=nz;if(l>1){player.rotation.y=yaw;player.children[0].position.y=4.1+Math.sin(performance.now()*.012)*.12}}
- for(const c of carList)if(c!==state.car&&Math.hypot(c.x-p.x,c.z-p.z)<3&&state.car===null){/* parked traffic remains static */}
- for(const o of pickupList)if(o.active){o.mesh.rotation.y+=dt*1.8;o.mesh.position.y=.65+Math.sin(performance.now()*.002+o.spin)*.22}
- const target=new THREE.Vector3(p.x+Math.sin(yaw)*camDist*Math.cos(pitch),8+camDist*Math.sin(pitch),p.z+Math.cos(yaw)*camDist*Math.cos(pitch));camera.position.lerp(target,1-Math.exp(-5*dt));camera.lookAt(p.x,4,p.z);
- $('cash').textContent='$'+Math.floor(state.money).toLocaleString();$('clock').textContent=`${String(Math.floor(state.hour)).padStart(2,'0')}:${String(Math.floor((state.hour%1)*60)).padStart(2,'0')}`;$('health').style.width=state.hp+'%';$('armor').style.width=state.armor+'%';$('wanted').textContent='★'.repeat(state.wanted)+'☆'.repeat(5-state.wanted);$('vehicle').textContent=state.car?`SPEED ${Math.round(Math.abs(state.car.speed)*3.6)} KM/H`:'';const ix=clamp(Math.floor((p.x-origin)/block),0,6),iz=clamp(Math.floor((p.z-origin)/block),0,6);$('area').textContent=iz===3?'PORT ASH':ix>=3&&ix<=5&&iz<3?'DOWNTOWN':iz>3&&ix>3?'NEON STRIP':'NORTHWOOD';const nearCar=carList.some(c=>Math.hypot(c.x-p.x,c.z-p.z)<16);$('hint').textContent=state.car?'[F] EXIT VEHICLE':nearCar?'[F] ENTER VEHICLE':pickupList.some(o=>o.active&&Math.hypot(o.x-p.x,o.z-p.z)<7)?'[E] COLLECT CASH':'';
- if(performance.now()-lastSave>15000){save();lastSave=performance.now()}}
-let then=performance.now();function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-then)/1000);then=now;update(dt);renderer.render(scene,camera)}requestAnimationFrame(loop);
-try{const old=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(old&&applySaveData(old))$('titleStatus').textContent=`Existing Crime City save found: $${state.money}. Start or import another save.`}catch{}
-</script>
+  <div id="title" class="screen">
+    <h1>CRIME CITY</h1>
+    <h2>3D OPEN-WORLD EDITION</h2>
+    <div class="panel">
+      <b>WASD</b> move / drive &nbsp; <b>MOUSE</b> look around<br>
+      <b>F</b> enter / exit car &nbsp; <b>SHIFT</b> sprint / nitro<br>
+      <b>SPACE</b> handbrake / brake &nbsp; <b>E</b> collect nearby cash<br>
+      <b>P</b> / <b>ESC</b> pause &nbsp; <b>M</b> mute ambient<br>
+      <b>CLICK</b> lock mouse look
+    </div>
+    <div style="margin-top: 16px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;">
+      <button id="titleImport" class="btn">IMPORT SAVE (.JSON)</button>
+      <button id="start" class="btn">START GAME</button>
+    </div>
+    <div id="titleStatus" class="small">Loading the 3D conversion with the same save/import flow.</div>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <h1 style="font-size: clamp(52px, 9vw, 120px);">PAUSED</h1>
+    <h2>CRIME CITY 3D</h2>
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:4px;">
+      <button id="resume" class="btn">RESUME</button>
+      <button id="export" class="btn">EXPORT SAVE (.JSON)</button>
+      <button id="import" class="btn">IMPORT SAVE (.JSON)</button>
+      <button id="newGame" class="btn">NEW GAME</button>
+    </div>
+    <div id="saveStatus" class="small" style="min-height: 24px; color: #73ef9d; font-size: 18px;"></div>
+    <div class="small">Save files are kept in the same general format so they can be imported between versions.</div>
+  </div>
+
+  <input id="saveFile" type="file" accept=".json,application/json" hidden>
+
+  <div id="hud" class="hidden">
+    <div id="brand">CRIME CITY 3D</div>
+    <div id="stats">
+      <div id="cash">$0</div>
+      <div id="clock">18:00</div>
+      <div id="area">DOWNTOWN</div>
+      <div style="margin-top: 6px;">HEALTH</div>
+      <div class="bar"><div id="health" style="width: 100%"></div></div>
+      <div>ARMOR</div>
+      <div class="bar"><div id="armor" class="armor" style="width: 0%"></div></div>
+      <div id="wanted">☆☆☆☆☆</div>
+      <div id="vehicleText" style="margin-top: 6px; min-height: 18px;"> </div>
+    </div>
+
+    <div id="help">
+      <b>WASD</b> move / steer &nbsp; <b>F</b> enter car &nbsp; <b>E</b> cash pickup<br>
+      <b>SHIFT</b> sprint / nitro &nbsp; <b>SPACE</b> brake &nbsp; <b>P</b> pause
+    </div>
+
+    <div id="hint"></div>
+    <div id="toast"></div>
+    <div id="crosshair"></div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+    "use strict";
+
+    const SAVE_KEY = 'crimecity_save_v2';
+    const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+    const dist2D = (x1, z1, x2, z2) => Math.hypot(x2 - x1, z2 - z1);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x9ec3d9);
+    scene.fog = new THREE.Fog(0x9ec3d9, 250, 1400);
+
+    const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 3000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08;
+    document.body.appendChild(renderer.domElement);
+
+    const hemi = new THREE.HemisphereLight(0xcfe9ff, 0x2a261e, 1.7);
+    scene.add(hemi);
+
+    const sun = new THREE.DirectionalLight(0xffefc7, 2.2);
+    sun.position.set(-260, 420, -180);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.camera.left = -500;
+    sun.shadow.camera.right = 500;
+    sun.shadow.camera.top = 500;
+    sun.shadow.camera.bottom = -500;
+    scene.add(sun);
+
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(2200, 2200),
+      new THREE.MeshStandardMaterial({ color: 0x5e7557, roughness: 0.9, metalness: 0.04 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    const cityGroup = new THREE.Group();
+    scene.add(cityGroup);
+
+    const colliders = [];
+    const parkedCars = [];
+    const pickups = [];
+    const roadSegments = [];
+
+    const material = (color, rough = 0.72, metal = 0.12) => new THREE.MeshStandardMaterial({
+      color,
+      roughness: rough,
+      metalness: metal,
+    });
+
+    function addRoad(x, z, w, d) {
+      const mesh = new THREE.Mesh(
+        new THREE.BoxGeometry(w, 0.12, d),
+        material(0x353a3d, 0.9, 0.1)
+      );
+      mesh.position.set(x, 0.08, z);
+      mesh.receiveShadow = true;
+      scene.add(mesh);
+      roadSegments.push(mesh);
+    }
+
+    function addDashedLine(x, z, axis) {
+      const group = new THREE.Group();
+      const mat = material(0xf3d752, 0.5, 0.08);
+      const count = 22;
+      for (let i = 0; i < count; i++) {
+        const strip = new THREE.Mesh(
+          axis === 'x' ? new THREE.BoxGeometry(16, 0.06, 2.8) : new THREE.BoxGeometry(2.8, 0.06, 16),
+          mat
+        );
+        if (axis === 'x') {
+          strip.position.set(i * 32 - 320, 0.16, 0);
+        } else {
+          strip.position.set(0, 0.16, i * 32 - 320);
+        }
+        group.add(strip);
+      }
+      group.position.set(x, 0, z);
+      scene.add(group);
+    }
+
+    const BLOCK = 230;
+    const ORIGIN = -720;
+    const ROADW = 46;
+
+    function createDistrictBlock(ix, iz, districtName) {
+      const bx = ORIGIN + ix * BLOCK;
+      const bz = ORIGIN + iz * BLOCK;
+      const pad = 8;
+      const span = BLOCK - ROADW - 12;
+
+      const sidewalk = new THREE.Mesh(
+        new THREE.BoxGeometry(span, 0.2, span),
+        material(0x878d90, 0.95, 0.08)
+      );
+      sidewalk.position.set(bx + BLOCK / 2, 0.12, bz + BLOCK / 2);
+      sidewalk.receiveShadow = true;
+      cityGroup.add(sidewalk);
+
+      const isPark = (ix === 1 && iz === 1) || (ix === 5 && iz === 5);
+      const isLot = ((ix * 11 + iz * 7) % 9 === 0);
+
+      if (isPark) {
+        for (let i = 0; i < 18; i++) {
+          const tree = new THREE.Group();
+          const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 2.1, 12, 8), material(0x5d3d2b));
+          trunk.position.y = 6;
+          trunk.castShadow = true;
+          const crown = new THREE.Mesh(new THREE.SphereGeometry(rand(4.5, 7.2), 10, 10), material(pick([0x4a8c4c, 0x3c7c44, 0x5c9f5d])));
+          crown.position.y = 13;
+          crown.castShadow = true;
+          tree.add(trunk, crown);
+          const tx = bx + 30 + rand(0, span - 60);
+          const tz = bz + 30 + rand(0, span - 60);
+          tree.position.set(tx, 0.2, tz);
+          tree.traverse(obj => {
+            if (obj.isMesh) {
+              obj.castShadow = true;
+              obj.receiveShadow = true;
+            }
+          });
+          cityGroup.add(tree);
+        }
+        return;
+      }
+
+      if (isLot) {
+        const lotMat = material(0x4e4d54, 0.88, 0.08);
+        const lotPlane = new THREE.Mesh(new THREE.BoxGeometry(span * 0.78, 0.06, span * 0.78), lotMat);
+        lotPlane.position.set(bx + BLOCK / 2, 0.18, bz + BLOCK / 2);
+        lotPlane.receiveShadow = true;
+        cityGroup.add(lotPlane);
+        return;
+      }
+
+      const buildingCount = 1 + Math.floor(Math.random() * 3);
+      for (let b = 0; b < buildingCount; b++) {
+        const w = rand(span * 0.3, span * 0.72);
+        const d = rand(span * 0.3, span * 0.72);
+        const h = districtName === 'DOWNTOWN' ? rand(55, 180) : rand(22, 90);
+        const x = bx + 25 + rand(0, span - w - 30);
+        const z = bz + 25 + rand(0, span - d - 30);
+        const color = districtName === 'DOWNTOWN'
+          ? pick([0x5d6778, 0x767f89, 0x6e7d85, 0x8593a1])
+          : pick([0x977d6e, 0x8d7d71, 0x7c6d63, 0x6d7d7a]);
+
+        const building = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material(color, 0.8, 0.14));
+        building.position.set(x + w / 2, h / 2, z + d / 2);
+        building.castShadow = true;
+        building.receiveShadow = true;
+        cityGroup.add(building);
+
+        colliders.push({
+          minX: x,
+          maxX: x + w,
+          minZ: z,
+          maxZ: z + d,
+        });
+
+        const roof = new THREE.Mesh(new THREE.BoxGeometry(w + 6, 2, d + 6), material(0x40474e));
+        roof.position.set(x + w / 2, h + 1, z + d / 2);
+        roof.castShadow = true;
+        cityGroup.add(roof);
+
+        const rows = Math.ceil(h / 16);
+        const cols = Math.max(2, Math.ceil(w / 18));
+        for (let r = 1; r < rows; r += 2) {
+          for (let c = 0; c < cols; c += 2) {
+            const panel = new THREE.Mesh(new THREE.BoxGeometry(3.5, 3.5, 0.4), material(0x9ecce6, 0.3, 0.15));
+            panel.position.set(x + c * (w / cols) + 8, r * 12, z + d + 0.3);
+            panel.castShadow = true;
+            cityGroup.add(panel);
+          }
+        }
+      }
+    }
+
+    for (let iz = 0; iz < 7; iz++) {
+      for (let ix = 0; ix < 7; ix++) {
+        const districtName = iz === 3 ? 'PORT ASH' : (ix >= 3 && ix <= 5 && iz < 3 ? 'DOWNTOWN' : (ix > 3 && iz > 3 ? 'NEON STRIP' : 'NORTHWOOD'));
+        createDistrictBlock(ix, iz, districtName);
+      }
+    }
+
+    const roadGrid = [];
+    for (let i = 0; i < 8; i++) {
+      const pos = ORIGIN + i * BLOCK + BLOCK / 2;
+      roadGrid.push({ x: pos, z: 0, w: ROADW, d: 1800 });
+      roadGrid.push({ x: 0, z: pos, w: 1800, d: ROADW });
+    }
+
+    roadGrid.forEach(r => addRoad(r.x, r.z, r.w, r.d));
+
+    for (let i = 0; i < 18; i++) {
+      addDashedLine(ORIGIN + i * BLOCK + BLOCK / 2, 0, 'x');
+      addDashedLine(0, ORIGIN + i * BLOCK + BLOCK / 2, 'z');
+    }
+
+    function createCar(x, z, color = 0x3f73d2) {
+      const g = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.BoxGeometry(7.8, 2.2, 14), material(color, 0.54, 0.18));
+      body.position.y = 2.0;
+      body.castShadow = true;
+      g.add(body);
+
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(5.8, 2.3, 6.5), material(0x213548, 0.42, 0.16));
+      cabin.position.set(0, 3.8, -1.2);
+      cabin.castShadow = true;
+      g.add(cabin);
+
+      for (const side of [-3.1, 3.1]) {
+        for (const depth of [-4.7, 4.7]) {
+          const wheel = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.8, 12), material(0x1d1d1f));
+          wheel.rotation.z = Math.PI / 2;
+          wheel.position.set(side, 1.1, depth);
+          wheel.castShadow = true;
+          g.add(wheel);
+        }
+      }
+
+      const light = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.2, 0.2), material(0xfff2a1, 0.38, 0.2));
+      light.position.set(0, 2.5, 7.35);
+      g.add(light);
+
+      g.position.set(x, 0, z);
+      scene.add(g);
+
+      const car = {
+        mesh: g,
+        x,
+        z,
+        yaw: 0,
+        speed: 0,
+        occupied: false,
+        tint: color,
+      };
+      parkedCars.push(car);
+      return car;
+    }
+
+    for (let i = 0; i < 15; i++) {
+      const x = ORIGIN + BLOCK * (1 + Math.floor(Math.random() * 6)) + rand(-28, 28);
+      const z = ORIGIN + BLOCK * (1 + Math.floor(Math.random() * 6)) + rand(-28, 28);
+      createCar(x, z, pick([0x8e3a35, 0x2b6cb2, 0xc8c9cb, 0x405d4b, 0x6b4d8c]));
+    }
+
+    function addPickup(x, z, val = 40) {
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.8, 1.8), material(0x49f59a, 0.35, 0.1));
+      mesh.position.set(x, 1.1, z);
+      mesh.castShadow = true;
+      scene.add(mesh);
+      pickups.push({ x, z, value: val, mesh, active: true, phase: Math.random() * 10 });
+    }
+
+    for (let i = 0; i < 36; i++) {
+      const x = rand(-800, 800);
+      const z = rand(-800, 800);
+      addPickup(x, z, 25 + Math.floor(Math.random() * 80));
+    }
+
+    const playerGroup = new THREE.Group();
+    const playerBody = new THREE.Mesh(new THREE.CapsuleGeometry(1.5, 4.2, 6, 12), material(0xd24b31, 0.7, 0.12));
+    playerBody.position.y = 3.2;
+    playerBody.castShadow = true;
+    playerGroup.add(playerBody);
+
+    const head = new THREE.Mesh(new THREE.SphereGeometry(1.35, 16, 16), material(0xe0b991, 0.9, 0.02));
+    head.position.y = 7.1;
+    head.castShadow = true;
+    playerGroup.add(head);
+
+    playerGroup.position.set(-540, 0, -340);
+    scene.add(playerGroup);
+
+    const state = {
+      started: false,
+      paused: false,
+      money: 0,
+      health: 100,
+      armor: 0,
+      wanted: 0,
+      hour: 18,
+      x: playerGroup.position.x,
+      z: playerGroup.position.z,
+      yaw: 0,
+      pitch: 0.42,
+      car: null,
+      lastSaveAt: 0,
+      active: true,
+    };
+
+    const keys = {};
+    const ui = {
+      title: document.getElementById('title'),
+      pause: document.getElementById('pause'),
+      hud: document.getElementById('hud'),
+      titleStatus: document.getElementById('titleStatus'),
+      saveStatus: document.getElementById('saveStatus'),
+      cash: document.getElementById('cash'),
+      clock: document.getElementById('clock'),
+      area: document.getElementById('area'),
+      health: document.getElementById('health'),
+      armor: document.getElementById('armor'),
+      wanted: document.getElementById('wanted'),
+      vehicleText: document.getElementById('vehicleText'),
+      hint: document.getElementById('hint'),
+      toast: document.getElementById('toast'),
+      saveFile: document.getElementById('saveFile'),
+    };
+
+    function toast(text) {
+      ui.toast.textContent = text;
+      ui.toast.style.opacity = '1';
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => {
+        ui.toast.style.opacity = '0';
+      }, 1800);
+    }
+
+    function getSaveData() {
+      return {
+        version: 2,
+        savedAt: new Date().toISOString(),
+        money: Math.max(0, state.money),
+        health: state.health,
+        armor: state.armor,
+        wanted: state.wanted,
+        hour: state.hour,
+        x: state.x,
+        z: state.z,
+        yaw: state.yaw,
+        car: state.car ? { x: state.car.x, z: state.car.z, yaw: state.car.yaw, speed: state.car.speed } : null,
+      };
+    }
+
+    function applySaveData(data) {
+      if (!data || typeof data !== 'object') return false;
+      if (typeof data.money !== 'number' && typeof data.money !== 'string') return false;
+
+      state.money = Math.max(0, Number(data.money) || 0);
+      state.health = clamp(Number(data.health) || 100, 0, 100);
+      state.armor = clamp(Number(data.armor) || 0, 0, 100);
+      state.wanted = clamp(Number(data.wanted) || 0, 0, 5);
+      state.hour = ((Number(data.hour) || 18) % 24 + 24) % 24;
+      state.x = Number(data.x) || playerGroup.position.x;
+      state.z = Number(data.z) || playerGroup.position.z;
+      state.yaw = Number(data.yaw) || 0;
+
+      if (data.car && typeof data.car === 'object') {
+        const c = parkedCars.find(car => car && !car.occupied) || parkedCars[0];
+        if (c) {
+          c.x = Number(data.car.x) || c.x;
+          c.z = Number(data.car.z) || c.z;
+          c.yaw = Number(data.car.yaw) || c.yaw;
+          c.speed = Number(data.car.speed) || 0;
+          c.mesh.position.set(c.x, 0, c.z);
+          c.mesh.rotation.y = c.yaw;
+          state.car = c;
+        }
+      } else {
+        state.car = null;
+      }
+
+      playerGroup.position.set(state.x, 0, state.z);
+      playerGroup.rotation.y = state.yaw;
+      return true;
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify(getSaveData()));
+      } catch (e) {
+        // ignore storage issues
+      }
+    }
+
+    function exportSave() {
+      const blob = new Blob([JSON.stringify(getSaveData(), null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'crime-city-save.json';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      saveState();
+      ui.saveStatus.textContent = 'Downloaded crime-city-save.json';
+      toast('Save exported');
+    }
+
+    function importSaveFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(String(reader.result || ''));
+          if (!applySaveData(data)) throw new Error('Invalid save file');
+          ui.titleStatus.textContent = `Loaded save: $${Math.floor(state.money)}. Click START GAME to continue.`;
+          ui.saveStatus.textContent = `Imported save — $${Math.floor(state.money)}`;
+          saveState();
+          toast('Save imported');
+        } catch (err) {
+          ui.titleStatus.textContent = 'Could not import save file.';
+          ui.saveStatus.textContent = 'Could not import save file.';
+          toast('Import failed');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function setPause(enabled) {
+      if (!state.started) return;
+      state.paused = enabled;
+      ui.pause.classList.toggle('hidden', !enabled);
+      ui.hud.classList.toggle('hidden', enabled);
+      if (enabled) {
+        saveState();
+        ui.saveStatus.textContent = 'Progress saved locally.';
+      }
+    }
+
+    function getDistrictName(x, z) {
+      const ix = clamp(Math.floor((x + 900) / BLOCK), 0, 6);
+      const iz = clamp(Math.floor((z + 900) / BLOCK), 0, 6);
+      if (iz === 3) return 'PORT ASH';
+      if (ix >= 3 && ix <= 5 && iz < 3) return 'DOWNTOWN';
+      if (ix > 3 && iz > 3) return 'NEON STRIP';
+      return 'NORTHWOOD';
+    }
+
+    function isBlocked(x, z) {
+      if (Math.abs(x) > 980 || Math.abs(z) > 980) return true;
+      for (const c of colliders) {
+        if (x > c.minX - 3 && x < c.maxX + 3 && z > c.minZ - 3 && z < c.maxZ + 3) return true;
+      }
+      return false;
+    }
+
+    function findNearestCar(maxDist = 18) {
+      let closest = null;
+      let best = Infinity;
+      for (const car of parkedCars) {
+        const d = dist2D(car.x, car.z, state.x, state.z);
+        if (d < maxDist && d < best) {
+          best = d;
+          closest = car;
+        }
+      }
+      return closest;
+    }
+
+    function enterVehicle() {
+      const car = findNearestCar(18);
+      if (!car) {
+        toast('No nearby vehicle');
+        return;
+      }
+      state.car = car;
+      car.occupied = true;
+      playerGroup.visible = false;
+      toast('Vehicle entered');
+      saveState();
+    }
+
+    function exitVehicle() {
+      if (!state.car) return;
+      const car = state.car;
+      car.occupied = false;
+      playerGroup.visible = true;
+      const exitOffset = 7.5;
+      const ex = car.x + Math.sin(car.yaw) * exitOffset;
+      const ez = car.z + Math.cos(car.yaw) * exitOffset;
+      if (!isBlocked(ex, ez)) {
+        state.x = ex;
+        state.z = ez;
+      } else {
+        state.x = car.x + 6;
+        state.z = car.z + 6;
+      }
+      state.car = null;
+      playerGroup.position.set(state.x, 0, state.z);
+      toast('Exited vehicle');
+      saveState();
+    }
+
+    function collectNearby() {
+      let gained = 0;
+      for (const pickUp of pickups) {
+        if (!pickUp.active) continue;
+        if (dist2D(pickUp.x, pickUp.z, state.x, state.z) < 12) {
+          pickUp.active = false;
+          pickUp.mesh.visible = false;
+          gained += pickUp.value;
+        }
+      }
+      if (gained > 0) {
+        state.money += gained;
+        toast(`+$${gained}`);
+        saveState();
+      }
+    }
+
+    function startGame() {
+      state.started = true;
+      ui.title.classList.add('hidden');
+      ui.pause.classList.add('hidden');
+      ui.hud.classList.remove('hidden');
+      state.paused = false;
+      toast('Welcome to Crime City 3D');
+    }
+
+    function togglePause() {
+      if (!state.started) return;
+      setPause(!state.paused);
+    }
+
+    document.getElementById('start').addEventListener('click', startGame);
+    document.getElementById('resume').addEventListener('click', () => setPause(false));
+    document.getElementById('export').addEventListener('click', exportSave);
+    document.getElementById('import').addEventListener('click', () => ui.saveFile.click());
+    document.getElementById('titleImport').addEventListener('click', () => ui.saveFile.click());
+    document.getElementById('newGame').addEventListener('click', () => {
+      const ok = window.confirm('Start a new game? This will wipe the current save.');
+      if (ok) {
+        try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+        window.location.reload();
+      }
+    });
+
+    ui.saveFile.addEventListener('change', () => importSaveFile(ui.saveFile.files && ui.saveFile.files[0]));
+
+    document.addEventListener('keydown', (event) => {
+      if (event.code === 'Escape' || event.code === 'KeyP') {
+        if (state.started) togglePause();
+      }
+      if (event.code === 'KeyF' && state.started) {
+        if (state.car) exitVehicle(); else enterVehicle();
+      }
+      if (event.code === 'KeyE' && state.started) {
+        collectNearby();
+      }
+      if (event.code === 'KeyM') {
+        toast('Ambient mix toggled');
+      }
+      if (['Space', 'ArrowUp', 'ArrowDown'].includes(event.code)) {
+        event.preventDefault();
+      }
+      keys[event.code] = true;
+    });
+
+    document.addEventListener('keyup', (event) => {
+      keys[event.code] = false;
+    });
+
+    let pointerLocked = false;
+    const viewTarget = { x: 0, y: 0 };
+    renderer.domElement.addEventListener('click', () => {
+      if (document.pointerLockElement !== renderer.domElement) {
+        renderer.domElement.requestPointerLock();
+      }
+    });
+
+    document.addEventListener('pointerlockchange', () => {
+      pointerLocked = document.pointerLockElement === renderer.domElement;
+    });
+
+    document.addEventListener('mousemove', (event) => {
+      if (!pointerLocked || !state.started || state.paused) return;
+      state.yaw -= event.movementX * 0.0026;
+      state.pitch = clamp(state.pitch - event.movementY * 0.0018, 0.18, 1.0);
+    });
+
+    function updateSavedStateFromLive() {
+      state.x = playerGroup.position.x;
+      state.z = playerGroup.position.z;
+      if (state.car) {
+        state.x = state.car.x;
+        state.z = state.car.z;
+      }
+    }
+
+    function update(dt) {
+      if (!state.started || state.paused) return;
+
+      const moveX = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
+      const moveZ = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0);
+      const sprint = keys.ShiftLeft || keys.ShiftRight;
+
+      if (state.car) {
+        const car = state.car;
+        const throttle = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0);
+        const steer = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
+        const accel = sprint ? 32 : 22;
+        car.speed += throttle * accel * dt;
+        car.speed *= 0.985;
+        car.speed = clamp(car.speed, -18, sprint ? 52 : 38);
+        if (keys.Space) car.speed *= 0.9;
+        car.yaw += steer * (0.7 + Math.abs(car.speed) * 0.06) * dt * (car.speed >= 0 ? 1 : -1);
+        const nextX = car.x + Math.sin(car.yaw) * car.speed * dt;
+        const nextZ = car.z + Math.cos(car.yaw) * car.speed * dt;
+        if (!isBlocked(nextX, nextZ)) {
+          car.x = nextX;
+          car.z = nextZ;
+        } else {
+          car.speed *= -0.2;
+        }
+        car.mesh.position.set(car.x, 0, car.z);
+        car.mesh.rotation.y = car.yaw;
+        state.x = car.x;
+        state.z = car.z;
+        playerGroup.position.set(car.x, 0, car.z);
+      } else {
+        const forward = new THREE.Vector3(Math.sin(state.yaw), 0, Math.cos(state.yaw));
+        const right = new THREE.Vector3(Math.cos(state.yaw), 0, -Math.sin(state.yaw));
+        const dir = new THREE.Vector3();
+        if (moveZ !== 0 || moveX !== 0) {
+          dir.addScaledVector(forward, moveZ);
+          dir.addScaledVector(right, moveX);
+          dir.normalize();
+        }
+
+        const speed = sprint ? 32 : 20;
+        const nextX = playerGroup.position.x + dir.x * speed * dt;
+        const nextZ = playerGroup.position.z + dir.z * speed * dt;
+        if (!isBlocked(nextX, nextZ)) {
+          playerGroup.position.x = nextX;
+          playerGroup.position.z = nextZ;
+        }
+
+        playerGroup.rotation.y = state.yaw;
+        state.x = playerGroup.position.x;
+        state.z = playerGroup.position.z;
+      }
+
+      for (const pickup of pickups) {
+        if (!pickup.active) continue;
+        pickup.mesh.position.y = 1.1 + Math.sin(performance.now() * 0.003 + pickup.phase) * 0.3;
+        pickup.mesh.rotation.y += 0.02;
+      }
+
+      state.hour = (state.hour + dt * 0.06) % 24;
+      if (performance.now() - state.lastSaveAt > 15000) {
+        saveState();
+        state.lastSaveAt = performance.now();
+      }
+
+      updateSavedStateFromLive();
+      updateHUD();
+    }
+
+    function updateHUD() {
+      ui.cash.textContent = '$' + Math.floor(state.money).toLocaleString();
+      const h = Math.floor(state.hour);
+      const m = Math.floor((state.hour % 1) * 60);
+      ui.clock.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      ui.area.textContent = getDistrictName(state.x, state.z);
+      ui.health.style.width = `${state.health}%`;
+      ui.armor.style.width = `${state.armor}%`;
+      ui.wanted.textContent = '☆'.repeat(5 - state.wanted) + '★'.repeat(state.wanted);
+      ui.vehicleText.textContent = state.car ? `SPEED ${Math.round(Math.abs(state.car.speed) * 3.8)} KM/H` : '';
+
+      const nearCar = findNearestCar(20);
+      const nearCash = pickups.some(p => p.active && dist2D(p.x, p.z, state.x, state.z) < 14);
+      ui.hint.textContent = state.car
+        ? '[F] EXIT VEHICLE'
+        : nearCar
+          ? '[F] ENTER VEHICLE'
+          : nearCash
+            ? '[E] COLLECT CASH'
+            : '';
+    }
+
+    function updateCamera(dt) {
+      const followTarget = state.car ? state.car : { x: state.x, z: state.z };
+      const px = followTarget.x;
+      const pz = followTarget.z;
+      const distance = state.car ? 18 : 13;
+      const camX = px + Math.sin(state.yaw) * distance * Math.cos(state.pitch);
+      const camY = 6 + distance * Math.sin(state.pitch) * 1.2;
+      const camZ = pz + Math.cos(state.yaw) * distance * Math.cos(state.pitch);
+
+      camera.position.lerp(new THREE.Vector3(camX, camY, camZ), 1 - Math.exp(-dt * 12));
+      camera.lookAt(px, 4.5, pz);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const now = performance.now();
+      const dt = Math.min(0.033, (now - (animate.last || now)) / 1000 || 0.016);
+      animate.last = now;
+      update(dt);
+      updateCamera(dt);
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    try {
+      const existing = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+      if (existing && applySaveData(existing)) {
+        ui.titleStatus.textContent = `Existing save found: $${Math.floor(state.money)}. Click START GAME or import another one.`;
+      }
+    } catch (e) {
+      // ignore load errors
+    }
+  </script>
 </body>
 </html>
